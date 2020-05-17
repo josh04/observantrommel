@@ -1,0 +1,1 @@
+Change 'development' to 'production' in webpack.config.js to make a bundled build that can be run alone.

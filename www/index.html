@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="">
+    <meta name="theme-color" content="rgb(110, 122, 111)" />
+    <title>Secret Himmler</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    
+    <style type="text/css">
+canvas {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  outline: none;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0); /* mobile webkit */
+}
+
+@keyframes loadfade {
+  0% {
+    background:rgb(60, 16, 57);
+  }
+  100% {
+    background: rgb(110, 122, 111);
+  }
+}
+
+.change {
+   animation: loadfade 3s 1 ease-in-out;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.rankf {
+  text-align: right;
+}
+
+#claim_buttons, #played_buttons, #player_buttons {
+  margin: 5px 0;
+  padding: 0 0;
+}
+  </style>
+  </head> 
+  <body style="width:95%; margin: 10px auto; background: rgb(60, 16, 57);">
+    <script>
+    var sechit;
+    var game;
+    var pres = 1;
+    window.addEventListener("load", () => {
+      var tag = document.createElement("script");
+      tag.src = "./bootstrap.js";
+      document.getElementsByTagName("body")[0].appendChild(tag);
+      document.getElementById("content").className = "";
+    });
+    
+    </script>
+    <div id="loading" style="padding: 32px; font-size:48pt; color: rgb(252, 175, 62); text-align:left;">Loading...</div>
+    <div id="content" class="hidden container-fluid" style="padding:0 0px;margin:0px;">
+      <div class="row">
+        <div id="text" class="col-md-3 mb-1">
+          <div class="card text-white bg-dark"">
+
+            <div class="card-body">
+              <h5 class="card-title">Current state</h5>
+              <h6 class="card-subtitle mb-2 text-muted">Round <span id="current-round">0</span></h6>
+
+              <table id="details" class="table table-dark table-bordered table-hover">
+                <tr><td class="ranks">Deck left:</td><td class="rankf" id="deck-left">17</td></tr>
+                <tr><td class="ranks">Discard:</td><td class="rankf" id="discard">0</td></tr>
+                <tr><td class="ranks bg-primary">Lib. played:</td><td class="rankf bg-primary" id="lib-played">0</td></tr>
+                <tr><td class="ranks bg-danger">Fasc. played:</td><td class="rankf bg-danger" id="fasc-played">0</td></tr>
+                <tr><td class="ranks bg-primary">Lib. claimed:</td><td class="rankf bg-primary" id="lib-claimed">0</td></tr>
+                <tr><td class="ranks bg-danger">Fasc. claimed:</td><td class="rankf bg-danger" id="fasc-claimed">0</td></tr>
+                <tr><td class="ranks bg-primary">Lib. remain:</td><td class="rankf bg-primary" id="lib-remain">6</td></tr>
+                <tr><td class="ranks bg-danger">Fasc. remain:</td><td class="rankf bg-danger" id="fasc-remain">11</td></tr>
+              </table>
+              <button type="button" id="reset" class="btn btn-danger">Reset</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-2 mb-1">
+          <div class="card text-white bg-dark">
+            <div class="card-body">
+              <h5 class="card-title">Probabilities</h5>
+              <table id="ranking" class="table table-dark table-bordered table-hover">
+                <thead><tr><th>Draw</th><th>P. %</th></tr></thead>
+                <tr><td class="ranks" id="rank1s"></td><td class="rankf" id="rank1f"></td></tr>
+                <tr><td class="ranks" id="rank2s"></td><td class="rankf" id="rank2f"></td></tr>
+                <tr><td class="ranks" id="rank3s"></td><td class="rankf" id="rank3f"></td></tr>
+                <tr><td class="ranks" id="rank4s"></td><td class="rankf" id="rank4f"></td></tr>
+                <tr><td class="ranks" id="sums">Sum</td><td class="rankf" id="sumf"></td></tr>
+              </table>
+              <table id="ranking" class="table table-dark table-bordered table-hover">
+                <thead><tr><th>TD</th><th>P. %</th></tr></thead>
+                <tr><td class="ranks" id="td1s"></td><td class="rankf" id="td1f"></td></tr>
+                <tr><td class="ranks" id="td2s"></td><td class="rankf" id="td2f"></td></tr>
+                <tr><td class="ranks" id="td-sums">Sum</td><td class="rankf" id="td-sumf"></td></tr>
+              </table>
+
+              <p class="alert alert-warning hidden" id="count-warning"></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-7 pr-0">
+          <div class="container card text-white bg-dark" style="margin-bottom:5px; padding-bottom:5px;">
+
+            <div class="row card-body" style="padding-bottom:0px;">
+              <h5 class="card-title">Data entry</h5>
+            </div>
+            <div class="row">
+              <div class="text-center col-sm-12">
+                <div id="player_buttons" class="btn-group btn-group-toggle col-sm" data-toggle="buttons" role="group">
+                  <label class="btn btn-secondary"><input type="radio" name="pres" id="p_1" />1</label>
+                  <label class="btn btn-secondary"><input type="radio" name="pres" id="p_2" />2</label>
+                  <label class="btn btn-secondary"><input type="radio" name="pres" id="p_3" />3</label>
+                  <label class="btn btn-secondary"><input type="radio" name="pres" id="p_4" />4</label>
+                  <label class="btn btn-secondary"><input type="radio" name="pres" id="p_5" />5</label>
+                  <label class="btn btn-secondary"><input type="radio" name="pres" id="p_6" />6</label>
+                  <label class="btn btn-secondary"><input type="radio" name="pres" id="p_7" />7</label>
+                  <label class="btn btn-secondary"><input type="radio" name="pres" id="p_8" />8</label>
+                  <label class="btn btn-secondary"><input type="radio" name="pres" id="p_9" />9</label>
+                  <label class="btn btn-secondary"><input type="radio" name="pres" id="p_10" />10</label>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="text-center col-sm-12">
+                <div id="claim_buttons" class="btn-group col-sm" role="group">
+                  <button type="button" id="RRR" class="btn btn-danger">RRR</button>
+                  <button type="button" id="RRB" class="btn btn-warning">RRB</button>
+                  <button type="button" id="RBB" class="btn btn-info">RBB</button>
+                  <button type="button" id="BBB" class="btn btn-primary">BBB</button>
+                  <button type="button" id="TD" class="btn btn-secondary">TD</button>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="text-center col-sm-12">
+                <div id="played_buttons" class="btn-group col-sm" role="group">
+                  <div type="button" id="R" class="btn btn-danger disabled">R</div>
+                  <div type="button" id="B" class="btn btn-primary disabled">B</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-7 mb-1">
+              <div class="card text-white bg-dark">
+                <div class="card-body">
+                  <h5 class="card-title">Rounds so far</h5>
+                  <table class="table table-dark table-bordered table-hover">
+                    <thead><tr><th>Round</th><th>Pres.</th><th>Draw</th><th>Result</th><th>P. %</th></tr></thead>
+                    <tbody id="past-rounds"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-5 mb-2">
+              <div class="card text-white bg-dark">
+                <div class="card-body">
+                  <h5 class="card-title">Presidents</h5>
+                  <table class="table table-dark table-bordered table-hover">
+                    <thead><tr><th>Pres.</th><th>Anti-P. %</th></tr></thead>
+                    <tbody id="past-presidents"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+    <noscript>This page contains webassembly and javascript content, please enable javascript in your browser.</noscript>
+    <script>
+      var hand;
+      function do_draw_with_cards(c, d, e, f) {
+        return sechit.do_claim_round(game, get_active_pres(), new wasm.Draw(c, d, e), f); 
+      }
+      function do_draw_with_topdeck(f) {
+        return sechit.do_topdeck(game, f); 
+      }
+      document.getElementById("RRR").addEventListener("click", function() {
+        hand = "RRR"
+        clicked_claim();
+      });
+      document.getElementById("RRB").addEventListener("click", function() {
+        hand = "RRB";
+        clicked_claim();
+      });
+      document.getElementById("RBB").addEventListener("click", function() {
+        hand = "RBB"
+        clicked_claim();
+      });
+      document.getElementById("BBB").addEventListener("click", function() {
+        hand = "BBB"
+        clicked_claim();
+      });
+      document.getElementById("TD").addEventListener("click", function() {
+        hand = "TD"
+        clicked_claim();
+      });
+
+      function clicked_claim() {
+        var cc = document.getElementById("claim_buttons").children;
+        for (var i = 0; i < cc.length; i++) {
+          var tableChild = cc[i].classList.add("disabled");
+        }
+        var pc = document.getElementById("played_buttons").children;
+        for (var i = 0; i < pc.length; i++) {
+          var tableChild = pc[i].classList.remove("disabled");
+        }
+      }
+      function clicked_played() {
+        var cc = document.getElementById("claim_buttons").children;
+        for (var i = 0; i < cc.length; i++) {
+          var tableChild = cc[i].classList.remove("disabled");
+        }
+        var pc = document.getElementById("played_buttons").children;
+        for (var i = 0; i < pc.length; i++) {
+          var tableChild = pc[i].classList.add("disabled");
+        }
+      }
+
+      function hand_to_cards(h) {
+        if (h == "RRR") {
+          return [sechit.Card.Fascist, sechit.Card.Fascist, sechit.Card.Fascist];
+        } else if (h == "RRB") {
+          return [sechit.Card.Fascist, sechit.Card.Fascist, sechit.Card.Liberal];
+        } else if (h == "RBB") {
+          return [sechit.Card.Fascist, sechit.Card.Liberal, sechit.Card.Liberal];
+        } else if (h == "BBB") {
+          return [sechit.Card.Liberal, sechit.Card.Liberal, sechit.Card.Liberal];
+        }
+      }
+
+      function card_to_string(card) {
+        if (card == sechit.Card.Liberal) {
+          return "Liberal";
+        } else {
+          return "Fascist";
+        }
+      }
+
+      function draw_to_string(draw) {
+        var fasc = 0;
+        var lib = 0;
+
+        for (var i = 0; i < 3; i++) {
+          if (draw[i] == sechit.Card.Liberal) {
+            lib++;
+          } else {
+            fasc++;
+          }
+        }
+
+        if (lib == 3) {
+          return "BBB";
+        } else if (fasc == 3) {
+          return "RRR";
+        } else if (fasc == 2) {
+          return "RRB";
+        }
+        return "RBB";
+      }
+
+      function draw_past_rounds() {
+        var prev_rounds = document.getElementById("past-rounds");
+        prev_rounds.textContent = "";
+        for (var j = 0; j < game.current_round; j++) {
+          var r = game.past_round(j);
+          let tr = document.createElement("tr");
+          let round = document.createElement("td");
+          round.innerHTML = (j + 1);
+          tr.appendChild(round);
+
+          let pres = document.createElement("td");
+          if (r.topdeck) {
+            pres.innerHTML = "N/A";
+          } else {
+            pres.innerHTML = r.pres;
+          }
+          tr.appendChild(pres);
+
+          let draw = document.createElement("td");
+          if (r.topdeck) {
+            draw.innerHTML = "N/A";
+          } else {
+            draw.innerHTML = draw_to_string(r.draw);
+          }
+          tr.appendChild(draw);
+
+          let res = document.createElement("td");
+          res.innerHTML = card_to_string(r.res);
+          tr.appendChild(res);
+
+          let prob = document.createElement("td");
+          prob.innerHTML = (r.prob * 100.0).toFixed(1);
+          tr.appendChild(prob);
+
+          if (r.res == sechit.Card.Liberal) {
+            tr.classList.add("bg-primary");
+          } else {
+            tr.classList.add("bg-danger");
+          }
+
+          prev_rounds.appendChild(tr);
+
+          if (r.shuffled) {
+            let tr2 = document.createElement("tr");
+            let td = document.createElement("td");
+            tr2.appendChild(td);
+            let td2 = document.createElement("td");
+            tr2.appendChild(td2);
+            let td3 = document.createElement("td");
+            tr2.appendChild(td3);
+            let td4 = document.createElement("td");
+            tr2.appendChild(td4);
+
+            let prob2 = document.createElement("td");
+            prob2.innerHTML = (r.subround_prob * 100.0).toFixed(3);
+            tr2.appendChild(prob2);
+
+            prev_rounds.appendChild(tr2);
+          }
+        }
+      }
+
+
+      function draw_past_presidents() {
+        var prev_rounds = document.getElementById("past-presidents");
+        prev_rounds.textContent = "";
+
+        var pre_map = {};
+        var post_map = {};
+
+        for (var j = 0; j < game.current_round; j++) {
+          var r = game.past_round(j);
+          if (r.pres != 0) {
+            if (r.pres in pre_map) {
+              pre_map[r.pres].probs.push(1.0 - r.prob);
+              pre_map[r.pres].count++;
+            } else {
+              pre_map[r.pres] = new Object();
+              pre_map[r.pres].probs = [1.0 - r.prob];
+              pre_map[r.pres].count = 1;
+            }
+          }
+        }
+
+        for (var i = 1; i < 11; i++) {
+          if (i in pre_map) {
+            post_map[i] = pre_map[i].probs.reduce((a, b) => a + b, 0) / pre_map[i].count;
+          }
+        }
+
+        for (var i = 1; i < 11; i++) {
+          if (i in post_map) {
+            let tr = document.createElement("tr");
+
+            let pres = document.createElement("td");
+            pres.innerHTML = i;
+            tr.appendChild(pres);
+
+            let prob = document.createElement("td");
+            prob.innerHTML = (post_map[i] * 100.0).toFixed(1);
+            tr.appendChild(prob);
+
+            if (post_map[i] < 0.1) {
+              tr.classList.add("bg-primary");
+            } else if (post_map[i] < 0.5) {
+              tr.classList.add("bg-info");
+            } else if (post_map[i] < 0.9) {
+              tr.classList.add("bg-warning");
+            } else {
+              tr.classList.add("bg-danger");
+            }
+
+            prev_rounds.appendChild(tr);
+          }
+        }
+      }
+
+      function update_current_state() {
+        var round = document.getElementById("current-round");
+        var deckleft = document.getElementById("deck-left");
+        var discard = document.getElementById("discard");
+        var libplay = document.getElementById("lib-played");
+        var fascplay = document.getElementById("fasc-played");
+        var libclaim = document.getElementById("lib-claimed");
+        var fasclaim = document.getElementById("fasc-claimed");
+
+        round.innerHTML = game.current_round;
+        deckleft.innerHTML = game.deck.draw;
+        discard.innerHTML = game.deck.discard;
+        libplay.innerHTML = game.deck.liberals_played;
+        fascplay.innerHTML = game.deck.fascists_played;
+        libclaim.innerHTML = game.deck.liberals_claimed;
+        fasclaim.innerHTML = game.deck.fascists_claimed;
+
+        draw_past_rounds();
+        draw_past_presidents();
+      }
+
+      function get_stat_table_rows() {
+        var rank1 = [document.getElementById("rank1s"), document.getElementById("rank1f")];
+        var rank2 = [document.getElementById("rank2s"), document.getElementById("rank2f")];
+        var rank3 = [document.getElementById("rank3s"), document.getElementById("rank3f")];
+        var rank4 = [document.getElementById("rank4s"), document.getElementById("rank4f")];
+        var sum = [document.getElementById("sums"), document.getElementById("sumf")];
+        var td1 = [document.getElementById("td1s"), document.getElementById("td1f")];
+        var td2 = [document.getElementById("td2s"), document.getElementById("td2f")];
+        var td3 = [document.getElementById("td-sums"), document.getElementById("td-sumf")];
+        return [rank1, rank2, rank3, rank4, sum, td1, td2, td3];
+      }
+
+      function get_pres_buttons() {
+        var p = [];
+        p.push(document.getElementById("p_1"));
+        p.push(document.getElementById("p_2"));
+        p.push(document.getElementById("p_3"));
+        p.push(document.getElementById("p_4"));
+        p.push(document.getElementById("p_5"));
+        p.push(document.getElementById("p_6"));
+        p.push(document.getElementById("p_7"));
+        p.push(document.getElementById("p_8"));
+        p.push(document.getElementById("p_9"));
+        p.push(document.getElementById("p_10"));
+        return p;
+      }
+
+      function get_active_pres() {
+        var preses = get_pres_buttons();
+        for (var i = 0; i < preses.length; i++) {
+          if (preses[i].checked) {
+            return i+1;
+          }
+        }
+        return 0;
+      }
+
+      function load_in_stats(stats) {
+        document.getElementById("lib-remain").innerHTML = stats.lib_left;
+        document.getElementById("fasc-remain").innerHTML = stats.fasc_left;
+
+        var list = get_stat_table_rows();
+
+        var cnt = 0.0;
+        for (var i = 0; i < 4; i++) {
+          list[i][0].innerHTML = stats.rank_str(i);
+          list[i][1].innerHTML = stats.rank_f(i);
+          cnt += parseFloat(stats.rank_f(i));
+
+          list[i][0].classList = [];
+          list[i][1].classList = [];
+          list[i][0].classList.add("ranks");
+          list[i][1].classList.add("rankf");
+        }
+
+        var topdeck_lib = 100.0 * stats.chance_topdeck(sechit.Card.Liberal);
+        var topdeck_fasc = 100.0 * stats.chance_topdeck(sechit.Card.Fascist);
+
+        list[5][0].classList = [];
+        list[6][0].classList = [];
+        list[5][1].classList = [];
+        list[6][1].classList = [];
+
+        list[5][0].classList.add("ranks");
+        list[6][0].classList.add("ranks");
+        list[5][1].classList.add("rankf");
+        list[6][1].classList.add("rankf");
+
+        if (topdeck_lib > topdeck_fasc) {
+          list[5][0].innerHTML = "B";
+          list[6][0].innerHTML = "R";
+          list[5][1].innerHTML = topdeck_lib.toFixed(1);
+          list[6][1].innerHTML = topdeck_fasc.toFixed(1);
+
+          list[5][0].classList.add("bg-primary");
+          list[5][1].classList.add("bg-primary");
+          list[6][0].classList.add("bg-danger");
+          list[6][1].classList.add("bg-danger");
+        } else {
+          list[5][0].innerHTML = "R";
+          list[6][0].innerHTML = "B";
+          list[5][1].innerHTML = topdeck_fasc.toFixed(1);
+          list[6][1].innerHTML = topdeck_lib.toFixed(1);
+
+          list[5][0].classList.add("bg-danger");
+          list[5][1].classList.add("bg-danger");
+          list[6][0].classList.add("bg-primary");
+          list[6][1].classList.add("bg-primary");
+        }
+
+        list[4][1].innerHTML = cnt.toFixed(0);
+
+        var cnt2 = (topdeck_lib + topdeck_fasc);
+        list[7][1].innerHTML = cnt2.toFixed(0);
+
+        if (cnt.toFixed(0) != 100) {
+          document.getElementById("count-warning").innerHTML = "Warning! Sum is not equal to 100. This likely means an impossible round has been claimed. All bets are off until shuffle."
+          document.getElementById("count-warning").classList.remove("hidden");
+        } else {
+          if (!document.getElementById("count-warning").classList.contains("hidden")) {
+            document.getElementById("count-warning").classList.add("hidden");
+            document.getElementById("count-warning").innerHTML = "";
+          }
+        }
+
+        for (var i = 0; i < 4; i++) {
+          if (list[i][0].innerHTML == "RRR") {
+            list[i][0].classList.add("bg-danger");
+            list[i][1].classList.add("bg-danger");
+          } else if (list[i][0].innerHTML == "RRB") {
+            list[i][0].classList.add("bg-warning");
+            list[i][1].classList.add("bg-warning");
+          } else if (list[i][0].innerHTML == "RBB") {
+            list[i][0].classList.add("bg-info");
+            list[i][1].classList.add("bg-info");
+          } else if (list[i][0].innerHTML == "BBB") {
+            list[i][0].classList.add("bg-primary");
+            list[i][1].classList.add("bg-primary");
+          }
+        }
+
+        update_current_state();
+      }
+
+      document.getElementById("R").addEventListener("click", function() {
+        if (hand == "TD") {
+          // topdeck
+          var stats = do_draw_with_topdeck(sechit.Card.Fascist);
+          load_in_stats(stats);
+        } else {
+          var cde = hand_to_cards(hand);
+          var stats = do_draw_with_cards(cde[0], cde[1], cde[2], sechit.Card.Fascist);
+          load_in_stats(stats);
+        }
+        clicked_played();
+      });
+      document.getElementById("B").addEventListener("click", function() {
+        if (hand == "TD") {
+          // topdeck
+          var stats = do_draw_with_topdeck(sechit.Card.Liberal);
+          load_in_stats(stats);
+        } else {
+          var cde = hand_to_cards(hand);
+          var stats = do_draw_with_cards(cde[0], cde[1], cde[2], sechit.Card.Liberal);
+          load_in_stats(stats);
+        }
+        clicked_played();
+      });
+
+      document.getElementById("reset").addEventListener("click", function() {
+        game = new sechit.GameState;
+
+
+        var list = get_stat_table_rows();
+        for (var i = 0; i < list.length - 1; i++) {
+          list[i][0].innerHTML = "";
+          list[i][1].innerHTML = "";
+
+          list[i][0].classList = [];
+          list[i][1].classList = [];
+          list[i][0].classList.add("ranks");
+          list[i][1].classList.add("rankf");
+        }
+        list[4][1].innerHTML = "";
+        update_current_state();
+      });
+
+    </script>
+  </body>
+</html>
