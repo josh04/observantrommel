@@ -1,8 +1,11 @@
-A card-counting tool for the card game 'Secret Hitler'.
+# Observant Rommel
+## A card-counting tool for the card game 'Secret Hitler'.
 
 Hosted version at https://josh04.computer/dropbox/sechit/
 
 Built with Rust and wasm-pack. 
+
+### Build instructions
 
 To build, install Rust via [Rustup](https://rustup.rs/) followed by [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/). 
 You will also need a version of [npm](https://www.npmjs.com/get-npm).
