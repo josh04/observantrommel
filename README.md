@@ -11,4 +11,4 @@ To build, install Rust via [Rustup](https://rustup.rs/) followed by [wasm-pack](
 You will also need a version of [npm](https://www.npmjs.com/get-npm).
 
 Run `wasm-pack build` in the root followed by moving into the `www` directory and running `npm install` (you only need to do this command once).
-Finally, run either `npm run start` to host a local webserver running the app, or `npm run build` to package it for hosting in `www/dist`.
+Finally, run either `npm run start` to host a local webserver running the app, or `npm run build` to package it for hosting in `www/dist` (you will need to copy `index.js` in from the folder above).
